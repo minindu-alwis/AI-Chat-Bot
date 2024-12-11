@@ -2,6 +2,8 @@
 let selectedSender = "Sender 1";
 const mainarray=[];
 
+var md = window.markdownit();
+
 
 function selectSender(sender) {
     selectedSender = sender;
@@ -134,23 +136,27 @@ function aibot(){
     body: raw,
   };
   
-  
   fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyC-Qp2CZsOZQYKYZ30Wyq1leFGB26FStew", requestOptions)
     .then((response) => response.json())
     .then((result) => {
-        mainarray.push(
-            {
+        console.log(result); // Inspect the API response structure
+        
+        const messageContent = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (messageContent) {
+            mainarray.push({
                 sender: "sender2",
-                message: result.candidates[0].content.parts[0].text
-            }
-        );
+                message: md.render(messageContent)
+            });
+        } else {
+            console.error("Message content is undefined");
+        }
+        console.log(mainarray);
         renderMessages();
-        console.log(t)
-
-
     })
-
+    .catch((error) => console.error("Error fetching data:", error));
    
 }
+
 
 
